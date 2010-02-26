@@ -9,7 +9,7 @@ def indent( text, cols )
 end
 
 def make_heading( heading, width=0 )
-  !heading.empty? ? heading.center(width) << $/ : ""
+  heading.empty? ? "" : heading.center(width).rstrip << $/
 end
 
 def make_decoration(width)
@@ -19,7 +19,7 @@ end
 def multiplication_table( integer, heading = '', decorate = false)
   times_table = []
   if integer == 0
-    times_table[0] = [0]
+    times_table << [0]
   else
     integer.abs.times do |y|
       times_table[y] = []
@@ -38,8 +38,8 @@ def multiplication_table( integer, heading = '', decorate = false)
   decoration = decorate ? make_decoration(table_width) : ""
   table_str = times_table.inject("") do |acc,row|
     row.each_with_index do |v,i|
-          this_width = i==0 ? first_column_width : other_column_width
-	  acc << v.to_s.rjust(this_width) << " "
+          this_width = i==0 ? first_column_width : other_column_width+1
+	  acc << v.to_s.rjust(this_width)
 	end
 	acc << $/
   end
@@ -52,7 +52,7 @@ end
 
 require 'getoptlong'
 
-def usage(msg)
+def usage(msg=nil)
   puts msg if msg
   puts "Usage: #{$0} [-d] [-h] <number> [<number>...]"
   puts <<-EOF
@@ -75,7 +75,7 @@ opts.each do |opt,arg|
     when '--heading' then opt_heading = true
     else usage "Unknown option '#{opt}'"
   end
-end
+end rescue usage
 
 while i = ARGV.shift
   puts multiplication_table(i.to_i, opt_heading ? "x#{i}" : "", opt_decorate)
